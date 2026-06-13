@@ -7,6 +7,8 @@ use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\TimeCapsuleController;
 use App\Http\Controllers\ClaimGuideController;
 use App\Http\Controllers\NotaryController;
+use App\Http\Controllers\AssetController;
+use App\Http\Controllers\InheritanceController;
 
 Route::middleware('auth:sanctum')->group(function () {
     // Vault Dokumen
@@ -49,4 +51,18 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notaries', [NotaryController::class, 'store']);
     Route::put('/notaries/{id}', [NotaryController::class, 'update']);
     Route::delete('/notaries/{id}', [NotaryController::class, 'destroy']);
+
+    // Aset Mapper
+    Route::get('/assets', [AssetController::class, 'index']);
+    Route::post('/assets', [AssetController::class, 'store']);
+    Route::get('/assets/summary', [AssetController::class, 'summary']);
+    Route::get('/assets/{id}', [AssetController::class, 'show']);
+    Route::put('/assets/{id}', [AssetController::class, 'update']);
+    Route::delete('/assets/{id}', [AssetController::class, 'destroy']);
+
+    // Simulasi Waris
+    Route::get('/inheritance', [InheritanceController::class, 'index']);
+    Route::post('/inheritance', [InheritanceController::class, 'store']);
+    Route::get('/inheritance/{id}', [InheritanceController::class, 'show']);
+    Route::delete('/inheritance/{id}', [InheritanceController::class, 'destroy']);
 });
