@@ -11,51 +11,83 @@ resources/js/
 │   │   └── Register.vue
 │   ├── Dashboard/
 │   │   └── Index.vue
+│   │
 │   ├── Documents/
 │   │   ├── Index.vue            ← Vault grid
 │   │   ├── Show.vue             ← Detail dokumen
 │   │   └── Create.vue           ← Upload form
+│   │
 │   ├── Assets/
 │   │   ├── Index.vue            ← Aset mapper table
 │   │   └── Create.vue
+│   │
+│   ├── Access/
+│   │   └── Index.vue            ← Akses Berjenjang
+│   │
+│   ├── Reminders/
+│   │   └── Index.vue            ← Pengingat Dokumen
+│   │
+│   ├── Profile/
+│   │   └── Index.vue            ← Profil Pengguna
+│   │
 │   ├── Inheritance/
-│   │   └── Index.vue            ← Simulasi waris
+│   │   └── Index.vue            ← Simulasi Waris
+│   │
 │   ├── TimeCapsule/
-│   │   └── Index.vue
+│   │   └── Index.vue            ← Kapsul Waktu
+│   │
 │   └── Notary/
-│       └── Index.vue
+│       └── Index.vue            ← Mitra Notaris
 │
 ├── Layouts/
-│   ├── AppLayout.vue            ← Sidebar + main content (semua halaman auth)
-│   └── AuthLayout.vue           ← Split layout login/register
+│   ├── AppLayout.vue            ← Sidebar + main content
+│   └── AuthLayout.vue           ← Login & Register layout
 │
 ├── Components/
 │   ├── UI/
-│   │   ├── Button.vue           ← btn-primary, btn-outline, btn-gold
-│   │   ├── Modal.vue            ← Reusable modal dialog
-│   │   ├── Badge.vue            ← Status badges (safe, warning, danger)
-│   │   ├── Card.vue             ← Base card wrapper
-│   │   ├── Alert.vue            ← Flash message
-│   │   ├── Spinner.vue          ← Loading indicator
-│   │   └── ConfirmDialog.vue    ← Konfirmasi sebelum hapus
+│   │   ├── Button.vue
+│   │   ├── Modal.vue
+│   │   ├── Badge.vue
+│   │   ├── Card.vue
+│   │   ├── Alert.vue
+│   │   ├── Spinner.vue
+│   │   └── ConfirmDialog.vue
+│   │
 │   ├── Vault/
-│   │   ├── VaultCard.vue        ← Card per dokumen di grid
-│   │   ├── UploadZone.vue       ← Drag & drop area
-│   │   └── AccessManager.vue    ← UI kelola akses dokumen
-│   └── Assets/
-│       ├── AssetRow.vue         ← Baris di tabel aset
-│       └── AssetTypeSummary.vue ← Summary bar 5 tipe aset
+│   │   ├── VaultCard.vue
+│   │   ├── UploadZone.vue
+│   │   └── AccessManager.vue
+│   │
+│   ├── Assets/
+│   │   ├── AssetRow.vue
+│   │   └── AssetTypeSummary.vue
+│   │
+│   ├── Access/
+│   │   ├── UserPermissionCard.vue
+│   │   ├── PermissionTable.vue
+│   │   └── AccessLevelBadge.vue
+│   │
+│   ├── Reminders/
+│   │   ├── ReminderCard.vue
+│   │   ├── ReminderTable.vue
+│   │   └── ExpiryBadge.vue
+│   │
+│   └── Profile/
+│       ├── ProfileCard.vue
+│       ├── AccountSecurity.vue
+│       └── AvatarUploader.vue
 │
 ├── Composables/
-│   ├── useDocuments.js          ← Fetch, upload, delete dokumen
+│   ├── useDocuments.js
 │   ├── useAssets.js
-│   └── useFlash.js              ← Handle flash messages
+│   ├── useAccess.js
+│   ├── useReminders.js
+│   ├── useProfile.js
+│   └── useFlash.js
 │
 └── Types/
-    └── index.d.ts               ← TypeScript interfaces
+    └── index.d.ts
 ```
-
----
 
 ## Cara Pakai AppLayout
 
