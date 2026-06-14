@@ -1,5 +1,45 @@
 <script setup>
+import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+const capsules = [
+  {
+    id: 1,
+    icon: '📹',
+    title: 'Pesan Video untuk Anak',
+    description: 'Video pribadi yang hanya dapat dibuka oleh anak setelah status terverifikasi.',
+    receiver: 'Budi & Dewi',
+    condition: 'Terverifikasi meninggal',
+    createdAt: '12 Jan 2024',
+    status: 'Terkunci',
+    badgeClass: 'gold',
+    cardClass: 'locked',
+  },
+  {
+    id: 2,
+    icon: '📄',
+    title: 'Surat Wasiat Digital',
+    description: 'Pesan tertulis dan arahan awal mengenai dokumen waris keluarga.',
+    receiver: 'Siti Rahayu',
+    condition: 'Verifikasi notaris',
+    createdAt: '20 Feb 2024',
+    status: 'Terjadwal',
+    badgeClass: 'success',
+    cardClass: '',
+  },
+  {
+    id: 3,
+    icon: '📁',
+    title: 'Dokumen Rahasia Keluarga',
+    description: 'Dokumen tambahan yang hanya terbuka kepada penerima tertentu.',
+    receiver: 'Notaris & Istri',
+    condition: 'Persetujuan dua pihak',
+    createdAt: '03 Mar 2024',
+    status: 'Private',
+    badgeClass: 'danger',
+    cardClass: 'private',
+  },
+]
 </script>
 
 <template>
@@ -18,7 +58,9 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           </p>
         </div>
 
-        <button class="wd-btn-primary">+ Buat Kapsul</button>
+        <Link href="/time-capsule/create" class="create-btn">
+          + Buat Kapsul
+        </Link>
       </div>
 
       <div class="capsule-stats">
@@ -48,58 +90,31 @@ import AppLayout from '@/Layouts/AppLayout.vue'
       </div>
 
       <div class="capsule-grid">
-        <div class="wd-card capsule-card locked">
+        <div
+          v-for="capsule in capsules"
+          :key="capsule.id"
+          class="wd-card capsule-card"
+          :class="capsule.cardClass"
+        >
           <div class="capsule-top">
-            <div class="capsule-icon">📹</div>
-            <span class="wd-badge gold">Terkunci</span>
+            <div class="capsule-icon">{{ capsule.icon }}</div>
+            <span class="wd-badge" :class="capsule.badgeClass">
+              {{ capsule.status }}
+            </span>
           </div>
 
-          <h3>Pesan Video untuk Anak</h3>
-          <p>Video pribadi yang hanya dapat dibuka oleh anak setelah status terverifikasi.</p>
+          <h3>{{ capsule.title }}</h3>
+          <p>{{ capsule.description }}</p>
 
           <div class="capsule-meta">
-            <span>👤 Penerima: Budi & Dewi</span>
-            <span>🔐 Kondisi: Terverifikasi meninggal</span>
-            <span>📅 Dibuat: 12 Jan 2024</span>
+            <span>👤 Penerima: {{ capsule.receiver }}</span>
+            <span>🔐 Kondisi: {{ capsule.condition }}</span>
+            <span>📅 Dibuat: {{ capsule.createdAt }}</span>
           </div>
 
-          <button class="wd-btn-outline">Lihat Detail</button>
-        </div>
-
-        <div class="wd-card capsule-card">
-          <div class="capsule-top">
-            <div class="capsule-icon">📄</div>
-            <span class="wd-badge success">Terjadwal</span>
-          </div>
-
-          <h3>Surat Wasiat Digital</h3>
-          <p>Pesan tertulis dan arahan awal mengenai dokumen waris keluarga.</p>
-
-          <div class="capsule-meta">
-            <span>👤 Penerima: Siti Rahayu</span>
-            <span>🔐 Kondisi: Verifikasi notaris</span>
-            <span>📅 Dibuat: 20 Feb 2024</span>
-          </div>
-
-          <button class="wd-btn-outline">Lihat Detail</button>
-        </div>
-
-        <div class="wd-card capsule-card private">
-          <div class="capsule-top">
-            <div class="capsule-icon">📁</div>
-            <span class="wd-badge danger">Private</span>
-          </div>
-
-          <h3>Dokumen Rahasia Keluarga</h3>
-          <p>Dokumen tambahan yang hanya terbuka kepada penerima tertentu.</p>
-
-          <div class="capsule-meta">
-            <span>👤 Penerima: Notaris & Istri</span>
-            <span>🔐 Kondisi: Persetujuan dua pihak</span>
-            <span>📅 Dibuat: 03 Mar 2024</span>
-          </div>
-
-          <button class="wd-btn-outline">Lihat Detail</button>
+          <Link :href="`/time-capsule/${capsule.id}`" class="detail-btn">
+            Lihat Detail
+          </Link>
         </div>
       </div>
 
@@ -138,7 +153,18 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   max-width: 720px;
 }
 
-.capsule-stats {
+.create-btn {
+  background: var(--wd-gold);
+  color: var(--wd-dark);
+  padding: 10px 18px;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.capsule-stats,
+.capsule-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
@@ -150,7 +176,8 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   gap: 14px;
 }
 
-.stat-card span {
+.stat-card span,
+.capsule-icon {
   width: 48px;
   height: 48px;
   border-radius: 14px;
@@ -170,12 +197,6 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   color: var(--wd-muted);
 }
 
-.capsule-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-
 .capsule-card {
   display: flex;
   flex-direction: column;
@@ -187,16 +208,6 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.capsule-icon {
-  width: 54px;
-  height: 54px;
-  border-radius: 14px;
-  background: rgba(240, 173, 82, 0.18);
-  display: grid;
-  place-items: center;
-  font-size: 26px;
 }
 
 .capsule-card h3 {
@@ -217,6 +228,17 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   margin-top: auto;
   font-size: 13px;
   color: var(--wd-muted);
+}
+
+.detail-btn {
+  text-align: center;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid var(--wd-border);
+  text-decoration: none;
+  color: var(--wd-dark);
+  font-weight: 700;
+  background: #fff;
 }
 
 .locked {

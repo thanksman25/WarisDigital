@@ -18,12 +18,12 @@ Route::get('/profile', function () {
 Route::get('/assets', function () {
     return Inertia::render('Assets/Index');
 });
-
 Route::get('/assets/create', fn () => Inertia::render('Assets/Create'));
 
 Route::get('/access', function () {
     return Inertia::render('Access/Index');
 });
+Route::get('/access/create', fn () => Inertia::render('Access/Create'));
 
 Route::get('/reminders', function () {
     return Inertia::render('Reminders/Index');
@@ -31,4 +31,14 @@ Route::get('/reminders', function () {
 
 Route::get('/time-capsule', function () {
     return Inertia::render('TimeCapsule/Index');
-});
+})->name('time-capsule.index');
+
+Route::get('/time-capsule/create', function () {
+    return Inertia::render('TimeCapsule/Create');
+})->name('time-capsule.create');
+
+Route::get('/time-capsule/{id}', function ($id) {
+    return Inertia::render('TimeCapsule/Show', [
+        'id' => $id
+    ]);
+})->name('time-capsule.show');
