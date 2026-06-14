@@ -175,20 +175,21 @@ function submit() {
 ## Design Tokens (via Tailwind)
 
 ```
+Design Tokens (via CSS Custom + Bootstrap)
+
 Warna utama:
-  navy:    #1B2B4B  → bg-navy, text-navy, border-navy
-  gold:    #C9A84C  → bg-gold, text-gold
-  sage:    #4A7C6B  → bg-sage, text-sage
-  ivory:   #F7F4EE  → bg-ivory
-  slate:   #E8EDF5  → bg-slate-vault
+  ivory:   #F8FAE5
+  gold:    #F0AD52
+  dark:    #2B0303
+  brown:   #A76430
 
-Font:
-  font-display  → Fraunces (semua heading h1-h3)
-  font-sans     → Inter (body, label, button)
+CSS global:
+  resources/css/warisdigital.css
 
-Border radius:
-  rounded-card  → 14px (cards)
-  rounded-btn   → 10px (buttons, inputs)
+Layout:
+  AppLayout.vue  → halaman setelah login
+  AuthLayout.vue → login/register
+  Landing.vue    → halaman publik
 ```
 
 ---
