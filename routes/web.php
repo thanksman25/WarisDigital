@@ -19,6 +19,8 @@ Route::get('/assets', function () {
     return Inertia::render('Assets/Index');
 });
 
+Route::get('/assets/create', fn () => Inertia::render('Assets/Create'));
+
 Route::get('/access', function () {
     return Inertia::render('Access/Index');
 });
