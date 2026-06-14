@@ -1,5 +1,16 @@
 <script setup>
+import { ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+const activeCategory = ref('Semua')
+
+function editDocument() {
+  alert('Fitur edit belum disambungkan ke backend.')
+}
+
+function deleteDocument() {
+  alert('Fitur hapus belum disambungkan ke backend.')
+}
 </script>
 
 <template>
@@ -14,17 +25,60 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           <p>Kelola dokumen penting keluarga dalam satu tempat.</p>
         </div>
 
-        <button class="wd-btn-primary">+ Upload Dokumen</button>
+        <a href="/documents/create" class="wd-btn-primary">
+          + Upload Dokumen
+        </a>
       </div>
 
-      <div class="vault-tabs">
-        <button class="vault-tab active">Semua (12)</button>
-        <button class="vault-tab">KTP/Identitas (3)</button>
-        <button class="vault-tab">Properti (4)</button>
-        <button class="vault-tab">Kendaraan (2)</button>
-        <button class="vault-tab">Keuangan (2)</button>
-        <button class="vault-tab">Lainnya (1)</button>
-      </div>
+        <div class="vault-tabs">
+          <button
+            class="vault-tab"
+            :class="{ active: activeCategory === 'Semua' }"
+            @click="activeCategory = 'Semua'"
+          >
+            Semua
+          </button>
+
+          <button
+            class="vault-tab"
+            :class="{ active: activeCategory === 'Identitas' }"
+            @click="activeCategory = 'Identitas'"
+          >
+            KTP/Identitas
+          </button>
+
+          <button
+            class="vault-tab"
+            :class="{ active: activeCategory === 'Properti' }"
+            @click="activeCategory = 'Properti'"
+          >
+            Properti
+          </button>
+
+          <button
+            class="vault-tab"
+            :class="{ active: activeCategory === 'Kendaraan' }"
+            @click="activeCategory = 'Kendaraan'"
+          >
+            Kendaraan
+          </button>
+
+          <button
+            class="vault-tab"
+            :class="{ active: activeCategory === 'Keuangan' }"
+            @click="activeCategory = 'Keuangan'"
+          >
+            Keuangan
+          </button>
+
+          <button
+            class="vault-tab"
+            :class="{ active: activeCategory === 'Lainnya' }"
+            @click="activeCategory = 'Lainnya'"
+          >
+            Lainnya
+          </button>
+        </div>
 
       <div class="vault-toolbar">
         <div class="vault-search">🔍 <span>Cari nama dokumen...</span></div>
@@ -48,10 +102,11 @@ import AppLayout from '@/Layouts/AppLayout.vue'
               <div class="doc-date">Upload: 12 Mar 2024</div>
               <div class="doc-status status-exp">⚠ 3 Hari</div>
             </div>
+
             <div class="doc-actions">
-              <span>👁</span>
-              <span>✏️</span>
-              <span>🗑</span>
+              <a href="/documents/show" class="doc-action">👁</a>
+              <button class="doc-action" @click="editDocument">✏️</button>
+              <button class="doc-action" @click="deleteDocument">🗑</button>
             </div>
           </div>
         </div>
@@ -71,10 +126,11 @@ import AppLayout from '@/Layouts/AppLayout.vue'
               <div class="doc-date">Upload: 05 Jan 2024</div>
               <div class="doc-status status-ok">✅ Aktif</div>
             </div>
+
             <div class="doc-actions">
-              <span>👁</span>
-              <span>✏️</span>
-              <span>🗑</span>
+              <a href="/documents/show" class="doc-action">👁</a>
+              <button class="doc-action" @click="editDocument">✏️</button>
+              <button class="doc-action" @click="deleteDocument">🗑</button>
             </div>
           </div>
         </div>
@@ -94,56 +150,13 @@ import AppLayout from '@/Layouts/AppLayout.vue'
               <div class="doc-date">Upload: 20 Nov 2023</div>
               <div class="doc-status status-warn">⏰ 14 Hari</div>
             </div>
+
             <div class="doc-actions">
-              <span>👁</span>
-              <span>✏️</span>
-              <span>🗑</span>
+              <a href="/documents/show" class="doc-action">👁</a>
+              <button class="doc-action" @click="editDocument">✏️</button>
+              <button class="doc-action" @click="deleteDocument">🗑</button>
             </div>
           </div>
-        </div>
-      </div>
-
-      <div class="upload-panel wd-card">
-        <div class="upload-panel-header">
-          <h3>📤 Upload Dokumen Baru</h3>
-          <span>Form tampilan sementara</span>
-        </div>
-
-        <div class="upload-form">
-          <div class="form-field">
-            <label>Nama Dokumen</label>
-            <input value="KTP Ahmad Sutarjo" />
-          </div>
-
-          <div class="form-field">
-            <label>Kategori</label>
-            <select>
-              <option>Identitas/KTP</option>
-            </select>
-          </div>
-
-          <div class="form-field">
-            <label>Tgl. Berlaku s/d</label>
-            <input type="text" value="17/06/2025" />
-          </div>
-
-          <div class="form-field">
-            <label>Visibilitas</label>
-            <select>
-              <option>Privat (Saya saja)</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="dropzone">
-          <div class="dz-icon">📁</div>
-          <p>Seret & lepas file di sini, atau klik untuk memilih</p>
-          <small>PDF, JPG, PNG — Maks. 10MB</small>
-        </div>
-
-        <div class="upload-actions">
-          <button class="wd-btn-outline">Batal</button>
-          <button class="wd-btn-primary">Upload Dokumen →</button>
         </div>
       </div>
     </div>
@@ -310,101 +323,29 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 .doc-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
+}
+
+.doc-action {
+  border: none;
+  background: transparent;
+  text-decoration: none;
   cursor: pointer;
-}
-
-.upload-panel {
-  margin-top: 4px;
-}
-
-.upload-panel-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.upload-panel-header h3 {
-  margin: 0;
-  font-size: 18px;
-}
-
-.upload-panel-header span {
-  color: var(--wd-muted);
-  font-size: 13px;
-}
-
-.upload-form {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-}
-
-.form-field label {
-  display: block;
-  margin-bottom: 6px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--wd-muted);
-  text-transform: uppercase;
-}
-
-.form-field input,
-.form-field select {
-  width: 100%;
-  border: 1px solid var(--wd-border);
-  border-radius: 10px;
-  padding: 10px 12px;
-  background: white;
-}
-
-.dropzone {
-  margin-top: 18px;
-  border: 2px dashed rgba(167, 100, 48, 0.3);
-  border-radius: 14px;
-  background: var(--wd-bg);
-  padding: 24px;
-  text-align: center;
-}
-
-.dz-icon {
-  font-size: 28px;
-}
-
-.dropzone p {
-  margin: 8px 0 4px;
-}
-
-.dropzone small {
-  color: var(--wd-muted);
-}
-
-.upload-actions {
-  margin-top: 16px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  font-size: 14px;
+  padding: 0;
 }
 
 @media (max-width: 1100px) {
   .doc-grid {
     grid-template-columns: 1fr;
   }
-
-  .upload-form {
-    grid-template-columns: 1fr 1fr;
-  }
 }
 
 @media (max-width: 700px) {
   .vault-header,
-  .vault-toolbar,
-  .upload-panel-header {
+  .vault-toolbar {
     flex-direction: column;
     align-items: stretch;
-  }
-
-  .upload-form {
-    grid-template-columns: 1fr;
   }
 }
 </style>

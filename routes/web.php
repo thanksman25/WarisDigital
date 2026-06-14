@@ -7,9 +7,9 @@ Route::get('/', function () {
     return Inertia::render('Landing');
 });
 
-Route::get('/documents', function () {
-    return Inertia::render('Documents/Index');
-});
+Route::get('/documents', fn () => Inertia::render('Documents/Index'));
+Route::get('/documents/create', fn () => Inertia::render('Documents/Create'));
+Route::get('/documents/show', fn () => Inertia::render('Documents/Show'));
 
 Route::get('/profile', function () {
     return Inertia::render('Profile/Index');
