@@ -42,51 +42,19 @@ resources/js/
 ├── Layouts/
 │   ├── AppLayout.vue            ← Sidebar + main content
 │   └── AuthLayout.vue           ← Login & Register layout
-│
-├── Components/
-│   ├── UI/
-│   │   ├── Button.vue
-│   │   ├── Modal.vue
-│   │   ├── Badge.vue
-│   │   ├── Card.vue
-│   │   ├── Alert.vue
-│   │   ├── Spinner.vue
-│   │   └── ConfirmDialog.vue
-│   │
-│   ├── Vault/
-│   │   ├── VaultCard.vue
-│   │   ├── UploadZone.vue
-│   │   └── AccessManager.vue
-│   │
-│   ├── Assets/
-│   │   ├── AssetRow.vue
-│   │   └── AssetTypeSummary.vue
-│   │
-│   ├── Access/
-│   │   ├── UserPermissionCard.vue
-│   │   ├── PermissionTable.vue
-│   │   └── AccessLevelBadge.vue
-│   │
-│   ├── Reminders/
-│   │   ├── ReminderCard.vue
-│   │   ├── ReminderTable.vue
-│   │   └── ExpiryBadge.vue
-│   │
-│   └── Profile/
-│       ├── ProfileCard.vue
-│       ├── AccountSecurity.vue
-│       └── AvatarUploader.vue
-│
-├── Composables/
-│   ├── useDocuments.js
-│   ├── useAssets.js
-│   ├── useAccess.js
-│   ├── useReminders.js
-│   ├── useProfile.js
-│   └── useFlash.js
-│
-└── Types/
-    └── index.d.ts
+
+```
+## Layout yang Digunakan
+```
+AppLayout.vue  → halaman setelah login
+AuthLayout.vue → login dan register
+Landing.vue    → halaman publik, tidak memakai AppLayout
+
+Halaman seperti Dashboard, Vault Dokumen, Aset Mapper, Akses Berjenjang, Pengingat, Profil, Kapsul Waktu, Simulasi Waris, dan Mitra Notaris menggunakan AppLayout.
+
+Login dan Register menggunakan AuthLayout.
+
+Landing Page menggunakan layout sendiri.
 ```
 
 ## Cara Pakai AppLayout
@@ -98,13 +66,12 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 
 <template>
   <AppLayout>
-    <!-- Optional: custom header -->
-    <template #header>
-      <h1 class="font-display text-2xl text-navy">Dashboard</h1>
-    </template>
+    <template #title>Vault Dokumen</template>
+    <template #subtitle>Kelola dokumen penting keluarga dalam satu tempat.</template>
 
-    <!-- Content -->
-    <div>Isi halaman...</div>
+    <div class="wd-card">
+      Isi halaman...
+    </div>
   </AppLayout>
 </template>
 ```
@@ -170,6 +137,35 @@ function submit() {
 </template>
 ```
 
+## Styling
+```
+Frontend menggunakan kombinasi:
+
+Vue 3 + Inertia
+Bootstrap 5
+CSS custom WarisDigital
+
+CSS global disimpan di:
+
+resources/css/warisdigital.css
+
+CSS global digunakan untuk elemen bersama seperti:
+
+AppLayout
+Sidebar
+Header
+Card
+Button
+Badge
+Background
+Typography dasar
+
+CSS khusus halaman boleh ditulis di masing-masing file .vue menggunakan:
+
+<style scoped>
+/* CSS khusus halaman */
+</style>
+```
 ---
 
 ## Design Tokens (via Tailwind)
@@ -208,10 +204,11 @@ Tampil otomatis di AppLayout via `<Alert>` component.
 
 ## Konvensi Penamaan
 
-| Jenis | Konvensi | Contoh |
-|---|---|---|
-| Pages | PascalCase | `Documents/Index.vue` |
-| Components | PascalCase | `VaultCard.vue` |
-| Composables | camelCase + use prefix | `useDocuments.js` |
-| CSS classes | kebab-case (Tailwind) | `vault-card`, `btn-primary` |
-| Props | camelCase | `documentId`, `groupName` |
+| Jenis              | Konvensi               | Contoh                                     |
+| ------------------ | ---------------------- | ------------------------------------------ |
+| Pages              | PascalCase             | `Documents/Index.vue`                      |
+| Components         | PascalCase             | `VaultCard.vue`                            |
+| Composables        | camelCase + use prefix | `useDocuments.js`                          |
+| CSS global         | prefix `wd-`           | `wd-card`, `wd-btn-primary`                |
+| CSS khusus halaman | kebab-case             | `vault-card`, `asset-row`, `reminder-item` |
+| Props              | camelCase              | `documentId`, `groupName`                  |
