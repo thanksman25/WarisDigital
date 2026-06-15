@@ -2,7 +2,7 @@
 
 WarisDigital adalah sebuah platform digital berbasis web yang dirancang khusus untuk membantu keluarga Indonesia menyimpan, mengelola, dan mewariskan aset serta dokumen penting secara aman, terstruktur, dan terenkripsi.
 
-![WarisDigital Dashboard](public/images/dashboard_preview.png)
+![WarisDigital Dashboard](screenshots/dashboard_preview.png)
 
 ---
 
