@@ -2,7 +2,48 @@
 
 WarisDigital adalah sebuah platform digital berbasis web yang dirancang khusus untuk membantu keluarga Indonesia menyimpan, mengelola, dan mewariskan aset serta dokumen penting secara aman, terstruktur, dan terenkripsi.
 
-![WarisDigital Dashboard](screenshots/dashboard_preview.png)
+## Tampilan Aplikasi (Screenshots)
+
+Berikut adalah tampilan halaman dari platform WarisDigital secara berurutan:
+
+1. **Halaman Landing Page**
+   ![Halaman Landing Page](screenshots/image.png)
+
+2. **Halaman Register**
+   ![Halaman Register](screenshots/image%20copy.png)
+
+3. **Halaman Login**
+   ![Halaman Login](screenshots/image%20copy%202.png)
+
+4. **Dashboard Utama**
+   ![Dashboard Utama](screenshots/image%20copy%203.png)
+
+5. **Vault Dokumen**
+   ![Vault Dokumen](screenshots/image%20copy%204.png)
+
+6. **Aset Mapper**
+   ![Aset Mapper](screenshots/image%20copy%205.png)
+
+7. **Akses Berjenjang**
+   ![Akses Berjenjang](screenshots/image%20copy%206.png)
+
+8. **Pengingat Jatuh Tempo**
+   ![Pengingat Jatuh Tempo](screenshots/image%20copy%207.png)
+
+9. **Simulasi Waris**
+   ![Simulasi Waris](screenshots/image%20copy%208.png)
+
+10. **Kapsul Waktu**
+    ![Kapsul Waktu](screenshots/image%20copy%209.png)
+
+11. **Mitra Notaris**
+    ![Mitra Notaris](screenshots/image%20copy%2010.png)
+
+12. **Panduan Klaim**
+    ![Panduan Klaim](screenshots/image%20copy%2011.png)
+
+13. **Profil Pengguna**
+    ![Profil Pengguna](screenshots/image%20copy%2012.png)
 
 ---
 
