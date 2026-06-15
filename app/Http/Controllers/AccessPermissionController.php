@@ -29,39 +29,45 @@ class AccessPermissionController extends Controller
 
         if ($existing) {
             $existing->update(['permission' => $request->permission]);
-            return response()->json([
-                'message'    => 'Akses berhasil diperbarui',
-                'permission' => $existing
-            ]);
+            return redirect()->route('access.index')->with('success', 'Akses berhasil diperbarui.');
         }
 
-        $permission = AccessPermission::create([
+        AccessPermission::create([
             'document_id' => $request->document_id,
             'user_id'     => $request->user_id,
             'permission'  => $request->permission,
         ]);
 
-        return response()->json([
-            'message'    => 'Akses berhasil diberikan',
-            'permission' => $permission
-        ], 201);
+        return redirect()->route('access.index')->with('success', 'Akses berhasil diberikan.');
     }
 
-    // Lihat siapa saja yang punya akses ke dokumen
-    public function index($document_id)
+    public function index($document_id = null)
     {
-        $document = Document::where('id', $document_id)
-                            ->where('user_id', auth()->id())
-                            ->firstOrFail();
+        if ($document_id) {
+            $permissions = AccessPermission::where('document_id', $document_id)
+                                           ->with(['user', 'document'])
+                                           ->get();
+        } else {
+            $permissions = AccessPermission::whereHas('document', function ($query) {
+                $query->where('user_id', auth()->id());
+            })->with(['user', 'document'])->get();
+        }
 
-        $permissions = AccessPermission::where('document_id', $document_id)
-                                        ->with('user')
-                                        ->get();
-
-        return response()->json($permissions);
+        return \Inertia\Inertia::render('Access/Index', ['permissions' => $permissions]);
     }
 
     // Cabut akses user dari dokumen
+    public function create()
+    {
+        $documents = Document::where('user_id', auth()->id())->get();
+        $users = \App\Models\User::where('id', '!=', auth()->id())->get();
+
+        return \Inertia\Inertia::render('Access/Create', [
+            'documents' => $documents,
+            'users'     => $users,
+        ]);
+    }
+
     public function destroy($id)
     {
         $permission = AccessPermission::findOrFail($id);
@@ -73,8 +79,6 @@ class AccessPermissionController extends Controller
 
         $permission->delete();
 
-        return response()->json([
-            'message' => 'Akses berhasil dicabut'
-        ]);
+        return redirect()->route('access.index')->with('success', 'Akses berhasil dicabut.');
     }
 }

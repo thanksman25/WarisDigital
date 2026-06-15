@@ -1,12 +1,17 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
   simulations: Array,
 })
 
 const savedSims = ref(props.simulations ?? [])
+
+watch(() => props.simulations, (newSims) => {
+  savedSims.value = newSims ?? []
+})
 
 const lawLabels = { islam: 'Hukum Islam', perdata: 'Hukum Perdata', adat: 'Hukum Adat' }
 const relationLabels = {
@@ -89,6 +94,35 @@ const reset = () => {
   errorMsg.value = ''
   step.value = 'form'
 }
+
+const saveSimulation = () => {
+  if (!result.value) return
+  loading.value = true
+  router.post('/inheritance', {
+    title: result.value.title,
+    total_assets: result.value.total_assets,
+    law_type: result.value.law_type,
+    heirs: form.heirs.map(h => ({ name: h.name, relation: h.relation })),
+  }, {
+    onFinish: () => {
+      loading.value = false
+    },
+    onSuccess: () => {
+      savedSims.value = props.simulations ?? []
+      step.value = 'list'
+    }
+  })
+}
+
+const deleteSimulation = (id) => {
+  if (confirm('Apakah Anda yakin ingin menghapus simulasi ini secara permanen?')) {
+    router.delete(`/inheritance/${id}`, {
+      onSuccess: () => {
+        savedSims.value = props.simulations ?? []
+      }
+    })
+  }
+}
 </script>
 
 <template>
@@ -114,7 +148,10 @@ const reset = () => {
 
         <div v-else class="sim-grid">
           <div v-for="sim in savedSims" :key="sim.id" class="wd-card sim-card">
-            <div class="sim-title">{{ sim.title }}</div>
+            <div class="sim-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <div class="sim-title" style="margin-bottom: 0;">{{ sim.title }}</div>
+              <button class="delete-sim-btn" @click="deleteSimulation(sim.id)" style="background: none; border: none; color: #c0392b; cursor: pointer; font-size: 14px; padding: 0 4px;" title="Hapus Simulasi">🗑</button>
+            </div>
             <div class="sim-meta">
               <span class="wd-badge gold">{{ lawLabels[sim.law_type] }}</span>
               <span class="sim-total">{{ formatRp(sim.total_assets) }}</span>
@@ -264,6 +301,9 @@ const reset = () => {
             </div>
 
             <div class="wd-card action-card mt-2">
+              <button class="wd-btn-primary" style="width:100%; margin-bottom: 8px;" @click="saveSimulation" :disabled="loading">
+                {{ loading ? 'Menyimpan...' : '💾 Simpan Simulasi ke Database' }}
+              </button>
               <button class="wd-btn-outline" style="width:100%;" @click="reset">
                 + Buat Simulasi Baru
               </button>

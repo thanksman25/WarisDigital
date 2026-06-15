@@ -2,44 +2,12 @@
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
-const capsules = [
-  {
-    id: 1,
-    icon: '📹',
-    title: 'Pesan Video untuk Anak',
-    description: 'Video pribadi yang hanya dapat dibuka oleh anak setelah status terverifikasi.',
-    receiver: 'Budi & Dewi',
-    condition: 'Terverifikasi meninggal',
-    createdAt: '12 Jan 2024',
-    status: 'Terkunci',
-    badgeClass: 'gold',
-    cardClass: 'locked',
-  },
-  {
-    id: 2,
-    icon: '📄',
-    title: 'Surat Wasiat Digital',
-    description: 'Pesan tertulis dan arahan awal mengenai dokumen waris keluarga.',
-    receiver: 'Siti Rahayu',
-    condition: 'Verifikasi notaris',
-    createdAt: '20 Feb 2024',
-    status: 'Terjadwal',
-    badgeClass: 'success',
-    cardClass: '',
-  },
-  {
-    id: 3,
-    icon: '📁',
-    title: 'Dokumen Rahasia Keluarga',
-    description: 'Dokumen tambahan yang hanya terbuka kepada penerima tertentu.',
-    receiver: 'Notaris & Istri',
-    condition: 'Persetujuan dua pihak',
-    createdAt: '03 Mar 2024',
-    status: 'Private',
-    badgeClass: 'danger',
-    cardClass: 'private',
-  },
-]
+defineProps({
+  capsules: {
+    type: Array,
+    default: () => []
+  }
+})
 </script>
 
 <template>
@@ -89,33 +57,32 @@ const capsules = [
         </div>
       </div>
 
-      <div class="capsule-grid">
+      <div class="capsule-grid" v-if="capsules.length > 0">
         <div
           v-for="capsule in capsules"
           :key="capsule.id"
           class="wd-card capsule-card"
-          :class="capsule.cardClass"
         >
           <div class="capsule-top">
-            <div class="capsule-icon">{{ capsule.icon }}</div>
-            <span class="wd-badge" :class="capsule.badgeClass">
-              {{ capsule.status }}
-            </span>
+            <div class="capsule-icon">📄</div>
+            <span class="wd-badge gold">Terkunci</span>
           </div>
 
           <h3>{{ capsule.title }}</h3>
-          <p>{{ capsule.description }}</p>
+          <p>{{ capsule.message }}</p>
 
           <div class="capsule-meta">
-            <span>👤 Penerima: {{ capsule.receiver }}</span>
-            <span>🔐 Kondisi: {{ capsule.condition }}</span>
-            <span>📅 Dibuat: {{ capsule.createdAt }}</span>
+            <span>🔐 Kondisi: {{ capsule.unlock_condition }}</span>
+            <span>📅 Dibuat: {{ new Date(capsule.created_at).toLocaleDateString() }}</span>
           </div>
 
           <Link :href="`/time-capsule/${capsule.id}`" class="detail-btn">
             Lihat Detail
           </Link>
         </div>
+      </div>
+      <div v-else class="wd-card" style="text-align: center; padding: 40px; color: #888;">
+        Belum ada kapsul waktu.
       </div>
 
       <div class="wd-card capsule-note">

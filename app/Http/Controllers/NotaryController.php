@@ -14,7 +14,7 @@ class NotaryController extends Controller
                           ->orderBy('rating', 'desc')
                           ->get();
 
-        return response()->json($notaries);
+        return \Inertia\Inertia::render('Notary/Index', ['notaries' => $notaries]);
     }
 
     // Cari notaris berdasarkan kota/provinsi

@@ -14,7 +14,7 @@ class ReminderController extends Controller
                              ->orderBy('remind_at', 'asc')
                              ->get();
 
-        return response()->json($reminders);
+        return \Inertia\Inertia::render('Reminders/Index', ['reminders' => $reminders]);
     }
 
     // Buat reminder baru

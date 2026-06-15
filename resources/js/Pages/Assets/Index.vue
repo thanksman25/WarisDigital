@@ -1,5 +1,25 @@
 <script setup>
+import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+const props = defineProps({
+  assets: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const totalValue = computed(() => {
+  return props.assets.reduce((sum, asset) => sum + (asset.value || 0), 0)
+})
+
+const countProperty = computed(() => props.assets.filter(a => a.type === 'rumah' || a.type === 'tanah').length)
+const countVehicle = computed(() => props.assets.filter(a => a.type === 'kendaraan').length)
+const countFinance = computed(() => props.assets.filter(a => a.type === 'tabungan' || a.type === 'investasi').length)
+
+const formatRupiah = (number) => {
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number)
+}
 </script>
 
 <template>
@@ -16,22 +36,22 @@ import AppLayout from '@/Layouts/AppLayout.vue'
       <div class="summary-grid">
         <div class="wd-card summary-card">
           <h4>Total Aset</h4>
-          <h2>Rp 2,3 Miliar</h2>
+          <h2>{{ formatRupiah(totalValue) }}</h2>
         </div>
 
         <div class="wd-card summary-card">
           <h4>Properti</h4>
-          <h2>2</h2>
+          <h2>{{ countProperty }}</h2>
         </div>
 
         <div class="wd-card summary-card">
           <h4>Kendaraan</h4>
-          <h2>1</h2>
+          <h2>{{ countVehicle }}</h2>
         </div>
 
         <div class="wd-card summary-card">
           <h4>Keuangan</h4>
-          <h2>3</h2>
+          <h2>{{ countFinance }}</h2>
         </div>
       </div>
 
@@ -52,52 +72,23 @@ import AppLayout from '@/Layouts/AppLayout.vue'
         </thead>
 
         <tbody>
-            <tr>
-            <td>🏠 Rumah Jl. Merdeka</td>
+            <tr v-for="asset in assets" :key="asset.id">
+            <td>{{ asset.name }}</td>
 
             <td>
-                <span class="cat-badge property">
-                Properti
+                <span class="cat-badge" :class="asset.type === 'kendaraan' ? 'vehicle' : (asset.type === 'tabungan' || asset.type === 'investasi' ? 'finance' : 'property')">
+                {{ asset.type }}
                 </span>
             </td>
 
             <td>
                 <span class="asset-value">
-                Rp 1,2 M
+                {{ formatRupiah(asset.value) }}
                 </span>
             </td>
             </tr>
-
-            <tr>
-            <td>🚗 Honda Civic</td>
-
-            <td>
-                <span class="cat-badge vehicle">
-                Kendaraan
-                </span>
-            </td>
-
-            <td>
-                <span class="asset-value">
-                Rp 320 Jt
-                </span>
-            </td>
-            </tr>
-
-            <tr>
-            <td>🏦 Rekening BCA</td>
-
-            <td>
-                <span class="cat-badge finance">
-                Keuangan
-                </span>
-            </td>
-
-            <td>
-                <span class="asset-value">
-                Rp 95 Jt
-                </span>
-            </td>
+            <tr v-if="assets.length === 0">
+              <td colspan="3" style="text-align: center; color: #888;">Belum ada aset terdaftar.</td>
             </tr>
         </tbody>
         </table>

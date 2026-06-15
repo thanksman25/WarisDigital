@@ -1,27 +1,24 @@
 <script setup>
-import { ref } from 'vue'
+import { useForm, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Link } from '@inertiajs/vue3'
 
-const form = ref({
-  title: '',
-  type: '',
-  receiver: '',
-  condition: '',
-  message: '',
-  fileName: '',
+defineProps({
+  documents: {
+    type: Array,
+    default: () => [],
+  },
 })
 
-const handleFileUpload = (event) => {
-  const file = event.target.files[0]
+const form = useForm({
+  title: '',
+  message: '',
+  document_id: '',
+  unlock_condition: 'manual',
+  unlock_at: '',
+})
 
-  if (file) {
-    form.value.fileName = file.name
-  }
-}
-
-const saveCapsule = () => {
-  alert('Kapsul berhasil disiapkan. Nanti bagian ini akan disambungkan ke backend.')
+const submit = () => {
+  form.post('/time-capsule')
 }
 </script>
 
@@ -44,69 +41,70 @@ const saveCapsule = () => {
           </Link>
         </div>
 
-        <form class="capsule-form" @submit.prevent="saveCapsule">
+        <form class="capsule-form" @submit.prevent="submit">
           <div class="form-group">
-            <label>Judul Kapsul</label>
+            <label for="title">Judul Kapsul</label>
             <input
+              id="title"
               v-model="form.title"
               type="text"
               placeholder="Contoh: Pesan Video untuk Anak"
+              required
             />
+            <p v-if="form.errors.title" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.title }}
+            </p>
           </div>
 
           <div class="form-group">
-            <label>Jenis Kapsul</label>
-            <select v-model="form.type">
-              <option value="" disabled>Pilih jenis kapsul</option>
-              <option value="Pesan Video">Pesan Video</option>
-              <option value="Surat Wasiat Digital">Surat Wasiat Digital</option>
-              <option value="Dokumen Rahasia">Dokumen Rahasia</option>
-              <option value="Pesan Tertulis">Pesan Tertulis</option>
+            <label for="document_id">Hubungkan dengan Dokumen (Opsional)</label>
+            <select id="document_id" v-model="form.document_id">
+              <option value="">Tidak ada dokumen terhubung</option>
+              <option v-for="doc in documents" :key="doc.id" :value="doc.id">
+                {{ doc.title }} ({{ doc.file_type || 'Umum' }})
+              </option>
             </select>
+            <p v-if="form.errors.document_id" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.document_id }}
+            </p>
           </div>
 
           <div class="form-group">
-            <label>Penerima</label>
+            <label for="unlock_condition">Kondisi Pembukaan</label>
+            <select id="unlock_condition" v-model="form.unlock_condition" required>
+              <option value="manual">Buka Manual oleh Pemilik</option>
+              <option value="death">Kematian Terverifikasi (Verifikasi Admin)</option>
+              <option value="date">Tanggal Tertentu (Otomatis)</option>
+            </select>
+            <p v-if="form.errors.unlock_condition" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.unlock_condition }}
+            </p>
+          </div>
+
+          <div class="form-group" v-if="form.unlock_condition === 'date'">
+            <label for="unlock_at">Tanggal Pembukaan</label>
             <input
-              v-model="form.receiver"
-              type="text"
-              placeholder="Contoh: Budi & Dewi"
+              id="unlock_at"
+              v-model="form.unlock_at"
+              type="datetime-local"
+              required
             />
+            <p v-if="form.errors.unlock_at" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.unlock_at }}
+            </p>
           </div>
 
           <div class="form-group">
-            <label>Kondisi Pembukaan</label>
-            <select v-model="form.condition">
-              <option value="" disabled>Pilih kondisi pembukaan</option>
-              <option value="Terverifikasi meninggal">Terverifikasi meninggal</option>
-              <option value="Verifikasi notaris">Verifikasi notaris</option>
-              <option value="Persetujuan dua pihak">Persetujuan dua pihak</option>
-              <option value="Tanggal tertentu">Tanggal tertentu</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Upload File / Video / Dokumen</label>
-
-            <label class="upload-box">
-              <input type="file" hidden @change="handleFileUpload" />
-
-              <div class="upload-icon">📁</div>
-
-              <p v-if="!form.fileName">Klik untuk memilih file</p>
-              <p v-else>{{ form.fileName }}</p>
-
-              <small>PDF, DOCX, JPG, PNG, atau MP4</small>
-            </label>
-          </div>
-
-          <div class="form-group">
-            <label>Pesan atau Catatan</label>
+            <label for="message">Pesan atau Catatan Tertulis</label>
             <textarea
+              id="message"
               v-model="form.message"
               rows="5"
               placeholder="Tulis pesan yang ingin disimpan dalam kapsul waktu..."
             ></textarea>
+            <p v-if="form.errors.message" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.message }}
+            </p>
           </div>
 
           <div class="form-actions">
@@ -114,8 +112,8 @@ const saveCapsule = () => {
               Batal
             </Link>
 
-            <button type="submit" class="primary-btn">
-              Simpan Kapsul
+            <button type="submit" class="primary-btn" :disabled="form.processing">
+              {{ form.processing ? 'Menyimpan...' : 'Simpan Kapsul' }}
             </button>
           </div>
         </form>
@@ -198,36 +196,6 @@ const saveCapsule = () => {
 .form-group select:focus,
 .form-group textarea:focus {
   border-color: var(--wd-gold);
-}
-
-.upload-box {
-  border: 1px dashed var(--wd-border);
-  border-radius: 14px;
-  padding: 28px;
-  text-align: center;
-  background: #fffaf2;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.upload-box:hover {
-  border-color: var(--wd-gold);
-  transform: translateY(-2px);
-}
-
-.upload-icon {
-  font-size: 30px;
-  margin-bottom: 8px;
-}
-
-.upload-box p {
-  margin: 0;
-  font-weight: 700;
-  color: var(--wd-dark);
-}
-
-.upload-box small {
-  color: var(--wd-muted);
 }
 
 .form-actions {

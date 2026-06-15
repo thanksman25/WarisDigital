@@ -12,7 +12,7 @@ class VaultController extends Controller
     public function index()
     {
         $documents = Document::where('user_id', auth()->id())->get();
-        return response()->json($documents);
+        return \Inertia\Inertia::render('Documents/Index', ['documents' => $documents]);
     }
 
     // Upload dokumen baru
@@ -22,34 +22,38 @@ class VaultController extends Controller
             'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
             'file'        => 'required|file|max:10240', // max 10MB
+            'file_type'   => 'nullable|string',
         ]);
 
         $file     = $request->file('file');
         $path     = $file->store('vault/' . auth()->id(), 'private');
 
-        $document = Document::create([
+        Document::create([
             'user_id'      => auth()->id(),
             'title'        => $request->title,
             'description'  => $request->description,
             'file_path'    => $path,
-            'file_type'    => $file->getClientMimeType(),
+            'file_type'    => $request->file_type ?? 'Lainnya',
             'file_size'    => $file->getSize(),
             'is_encrypted' => false,
         ]);
 
-        return response()->json([
-            'message'  => 'Dokumen berhasil diupload',
-            'document' => $document
-        ], 201);
+        return redirect()->route('documents.index')->with('success', 'Dokumen berhasil diunggah.');
     }
 
     // Lihat detail dokumen
-    public function show($id)
+    public function show($id = null)
     {
+        $docId = $id ?? request('id');
         $document = Document::where('user_id', auth()->id())
-                            ->findOrFail($id);
+                            ->findOrFail($docId);
 
-        return response()->json($document);
+        $reminder = \App\Models\Reminder::where('document_id', $document->id)->first();
+
+        return \Inertia\Inertia::render('Documents/Show', [
+            'document' => $document,
+            'reminder' => $reminder,
+        ]);
     }
 
     // Hapus dokumen
@@ -58,11 +62,11 @@ class VaultController extends Controller
         $document = Document::where('user_id', auth()->id())
                             ->findOrFail($id);
 
-        Storage::disk('private')->delete($document->file_path);
+        if ($document->file_path !== 'dummy') {
+            Storage::disk('private')->delete($document->file_path);
+        }
         $document->delete();
 
-        return response()->json([
-            'message' => 'Dokumen berhasil dihapus'
-        ]);
+        return redirect()->route('documents.index')->with('success', 'Dokumen berhasil dihapus.');
     }
 }

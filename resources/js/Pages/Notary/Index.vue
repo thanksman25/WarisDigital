@@ -6,14 +6,7 @@ const props = defineProps({
   notaries: Array,
 })
 
-const list = props.notaries ?? [
-  { id: 1, name: 'Dr. Hendra Wijaya, S.H., M.Kn.', city: 'Jakarta Selatan', province: 'DKI Jakarta', specialization: 'Waris & Properti', phone: '0812-3456-7890', email: 'hendra@notaris.id', rating: 4.9, review_count: 128 },
-  { id: 2, name: 'Siti Rahayu, S.H., M.Kn.', city: 'Surabaya', province: 'Jawa Timur', specialization: 'Balik Nama & Akta', phone: '0813-9876-5432', email: 'siti@notaris.id', rating: 4.7, review_count: 94 },
-  { id: 3, name: 'Bambang Santoso, S.H.', city: 'Bandung', province: 'Jawa Barat', specialization: 'Waris Islam & Adat', phone: '0811-2233-4455', email: 'bambang@notaris.id', rating: 4.6, review_count: 76 },
-  { id: 4, name: 'Dewi Kusuma, S.H., M.Kn.', city: 'Medan', province: 'Sumatera Utara', specialization: 'Properti & Korporasi', phone: '0822-5566-7788', email: 'dewi@notaris.id', rating: 4.5, review_count: 61 },
-  { id: 5, name: 'Ahmad Fauzi, S.H.', city: 'Makassar', province: 'Sulawesi Selatan', specialization: 'Waris & Akta Lahir', phone: '0833-1122-3344', email: 'fauzi@notaris.id', rating: 4.4, review_count: 43 },
-  { id: 6, name: 'Rina Marlina, S.H., M.Kn.', city: 'Yogyakarta', province: 'DI Yogyakarta', specialization: 'Balik Nama Properti', phone: '0856-6677-8899', email: 'rina@notaris.id', rating: 4.8, review_count: 110 },
-]
+const list = props.notaries || []
 
 const searchCity = ref('')
 const searchSpec = ref('')

@@ -14,7 +14,7 @@ class InheritanceController extends Controller
                                   ->orderBy('created_at', 'desc')
                                   ->get();
 
-        return response()->json($simulations);
+        return \Inertia\Inertia::render('Inheritance/Index', ['simulations' => $simulations]);
     }
 
     // Buat simulasi waris baru
@@ -35,7 +35,7 @@ class InheritanceController extends Controller
             $request->heirs
         );
 
-        $simulation = Inheritance::create([
+        Inheritance::create([
             'user_id'      => auth()->id(),
             'title'        => $request->title,
             'total_assets' => $request->total_assets,
@@ -44,10 +44,7 @@ class InheritanceController extends Controller
             'result'       => $result,
         ]);
 
-        return response()->json([
-            'message'    => 'Simulasi waris berhasil dibuat',
-            'simulation' => $simulation
-        ], 201);
+        return redirect()->route('inheritance.index')->with('success', 'Simulasi waris berhasil disimpan.');
     }
 
     // Lihat detail simulasi
@@ -67,9 +64,7 @@ class InheritanceController extends Controller
 
         $simulation->delete();
 
-        return response()->json([
-            'message' => 'Simulasi waris berhasil dihapus'
-        ]);
+        return redirect()->route('inheritance.index')->with('success', 'Simulasi waris berhasil dihapus.');
     }
 
     // Logika perhitungan waris

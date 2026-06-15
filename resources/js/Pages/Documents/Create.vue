@@ -1,5 +1,30 @@
 <script setup>
+import { useForm, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { ref } from 'vue'
+
+const form = useForm({
+  title: '',
+  description: '',
+  file_type: 'Identitas',
+  file: null,
+})
+
+const fileName = ref('')
+
+const handleFileSelect = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    form.file = file
+    fileName.value = file.name
+  }
+}
+
+const submit = () => {
+  form.post('/documents', {
+    forceFormData: true,
+  })
+}
 </script>
 
 <template>
@@ -10,47 +35,72 @@ import AppLayout from '@/Layouts/AppLayout.vue'
     <div class="create-page wd-card">
       <h2>📤 Upload Dokumen Baru</h2>
 
-      <div class="form-grid">
-        <div class="form-field">
-          <label>Nama Dokumen</label>
-          <input type="text" value="KTP Ahmad Sutarjo" />
+      <form @submit.prevent="submit">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="title">Nama Dokumen</label>
+            <input
+              id="title"
+              type="text"
+              v-model="form.title"
+              placeholder="Contoh: KTP Ahmad Sutarjo"
+              required
+            />
+            <p v-if="form.errors.title" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.title }}
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="category">Kategori</label>
+            <select id="category" v-model="form.file_type">
+              <option value="Identitas">Identitas/KTP</option>
+              <option value="Properti">Properti</option>
+              <option value="Kendaraan">Kendaraan</option>
+              <option value="Keuangan">Keuangan</option>
+              <option value="Lainnya">Lainnya</option>
+            </select>
+            <p v-if="form.errors.file_type" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.file_type }}
+            </p>
+          </div>
+
+          <div class="form-field" style="grid-column: span 2;">
+            <label for="description">Deskripsi / Catatan</label>
+            <textarea
+              id="description"
+              v-model="form.description"
+              rows="3"
+              placeholder="Tambahkan keterangan tentang dokumen ini..."
+              style="width: 100%; border: 1px solid var(--wd-border); border-radius: 10px; padding: 11px 12px; font-family: inherit;"
+            ></textarea>
+            <p v-if="form.errors.description" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.description }}
+            </p>
+          </div>
         </div>
 
-        <div class="form-field">
-          <label>Kategori</label>
-          <select>
-            <option>Identitas/KTP</option>
-            <option>Properti</option>
-            <option>Kendaraan</option>
-            <option>Keuangan</option>
-          </select>
+        <div class="form-field" style="margin-top: 18px;">
+          <label>File Dokumen</label>
+          <label class="dropzone" style="display:block; cursor:pointer;">
+            <input type="file" @change="handleFileSelect" hidden required />
+            <div class="dz-icon">📁</div>
+            <p v-if="!fileName">Klik di sini untuk memilih file</p>
+            <p v-else style="font-weight:700; color:var(--wd-brown);">{{ fileName }}</p>
+            <small>PDF, JPG, PNG — Maks. 10MB</small>
+          </label>
+          <p v-if="form.errors.file" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.file }}
+          </p>
         </div>
 
-        <div class="form-field">
-          <label>Berlaku Hingga</label>
-          <input type="date" />
+        <div class="actions">
+          <Link href="/documents" class="wd-btn-outline">Batal</Link>
+          <button type="submit" class="wd-btn-primary" :disabled="form.processing">
+            {{ form.processing ? 'Mengupload...' : 'Upload Dokumen →' }}
+          </button>
         </div>
-
-        <div class="form-field">
-          <label>Visibilitas</label>
-          <select>
-            <option>Privat</option>
-            <option>Keluarga</option>
-            <option>Notaris</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="dropzone">
-        <div class="dz-icon">📁</div>
-        <p>Seret & lepas file di sini, atau klik untuk memilih</p>
-        <small>PDF, JPG, PNG — Maks. 10MB</small>
-      </div>
-
-      <div class="actions">
-        <a href="/documents" class="wd-btn-outline">Batal</a>
-        <button class="wd-btn-primary">Upload Dokumen →</button>
-      </div>
+      </form>
     </div>
   </AppLayout>
 </template>
@@ -83,7 +133,7 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 }
 
 .dropzone {
-  margin-top: 20px;
+  margin-top: 6px;
   border: 2px dashed rgba(167, 100, 48, 0.3);
   border-radius: 14px;
   background: var(--wd-bg);

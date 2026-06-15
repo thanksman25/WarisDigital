@@ -1,5 +1,27 @@
 <script setup>
+import { useForm, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+defineProps({
+  documents: {
+    type: Array,
+    default: () => [],
+  },
+  users: {
+    type: Array,
+    default: () => [],
+  },
+})
+
+const form = useForm({
+  document_id: '',
+  user_id: '',
+  permission: 'view',
+})
+
+const submit = () => {
+  form.post('/access')
+}
 </script>
 
 <template>
@@ -8,49 +30,61 @@ import AppLayout from '@/Layouts/AppLayout.vue'
     <template #subtitle>Undang anggota keluarga dan atur hak akses.</template>
 
     <div class="wd-card access-form">
-      <h2>👥 Tambah Pengguna</h2>
+      <h2>👥 Tambah Hak Akses Pengguna</h2>
 
-      <div class="form-grid">
-        <div class="form-field">
-          <label>Nama</label>
-          <input type="text" placeholder="Nama anggota keluarga">
+      <form @submit.prevent="submit">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="user_id">Pilih Pengguna</label>
+            <select id="user_id" v-model="form.user_id" required>
+              <option value="" disabled>Pilih anggota keluarga</option>
+              <option v-for="user in users" :key="user.id" :value="user.id">
+                {{ user.name }} ({{ user.email }})
+              </option>
+            </select>
+            <p v-if="form.errors.user_id" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.user_id }}
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="document_id">Pilih Dokumen</label>
+            <select id="document_id" v-model="form.document_id" required>
+              <option value="" disabled>Pilih dokumen dari vault</option>
+              <option v-for="doc in documents" :key="doc.id" :value="doc.id">
+                {{ doc.title }} ({{ doc.file_type || 'Umum' }})
+              </option>
+            </select>
+            <p v-if="form.errors.document_id" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.document_id }}
+            </p>
+          </div>
+
+          <div class="form-field" style="grid-column: span 2;">
+            <label for="permission">Hak Akses</label>
+            <select id="permission" v-model="form.permission">
+              <option value="view">Hanya Melihat (View)</option>
+              <option value="download">Melihat & Mengunduh (Download)</option>
+              <option value="edit">Mengedit (Edit)</option>
+            </select>
+            <p v-if="form.errors.permission" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.permission }}
+            </p>
+          </div>
         </div>
 
-        <div class="form-field">
-          <label>Email</label>
-          <input type="email" placeholder="email@example.com">
+        <div class="actions">
+          <Link href="/access" class="wd-btn-outline">Batal</Link>
+          <button type="submit" class="wd-btn-primary" :disabled="form.processing">
+            {{ form.processing ? 'Memproses...' : 'Berikan Akses →' }}
+          </button>
         </div>
-
-        <div class="form-field">
-          <label>Peran</label>
-          <select>
-            <option>Istri</option>
-            <option>Anak</option>
-            <option>Saudara</option>
-            <option>Notaris</option>
-          </select>
-        </div>
-
-        <div class="form-field">
-          <label>Hak Akses</label>
-          <select>
-            <option>Semua Dokumen</option>
-            <option>Properti</option>
-            <option>Keuangan</option>
-            <option>Kendaraan</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="actions">
-        <a href="/access" class="wd-btn-outline">Batal</a>
-        <button class="wd-btn-primary">Kirim Undangan →</button>
-      </div>
+      </form>
     </div>
   </AppLayout>
 </template>
 
-<style>
+<style scoped>
 .access-form {
   max-width: 900px;
   margin: 0 auto;

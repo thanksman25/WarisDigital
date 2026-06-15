@@ -1,5 +1,18 @@
 <script setup>
+import { useForm, Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+
+const form = useForm({
+  name: '',
+  type: 'tanah',
+  value: '',
+  description: '',
+  location: '',
+})
+
+const submit = () => {
+  form.post('/assets')
+}
 </script>
 
 <template>
@@ -10,48 +23,87 @@ import AppLayout from '@/Layouts/AppLayout.vue'
     <div class="asset-create wd-card">
       <h2>🏦 Tambah Aset Baru</h2>
 
-      <div class="form-grid">
-        <div class="form-field">
-          <label>Nama Aset</label>
-          <input type="text" placeholder="Contoh: Rumah Banda Aceh" />
+      <form @submit.prevent="submit">
+        <div class="form-grid">
+          <div class="form-field">
+            <label for="name">Nama Aset</label>
+            <input
+              id="name"
+              type="text"
+              v-model="form.name"
+              placeholder="Contoh: Rumah Banda Aceh"
+              required
+            />
+            <p v-if="form.errors.name" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.name }}
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="type">Jenis Aset</label>
+            <select id="type" v-model="form.type">
+              <option value="tanah">Tanah</option>
+              <option value="rumah">Rumah/Bangunan</option>
+              <option value="kendaraan">Kendaraan</option>
+              <option value="tabungan">Tabungan/Rekening</option>
+              <option value="investasi">Investasi/Saham</option>
+              <option value="lainnya">Lainnya</option>
+            </select>
+            <p v-if="form.errors.type" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.type }}
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="value">Nilai Aset (Rp)</label>
+            <input
+              id="value"
+              type="number"
+              v-model="form.value"
+              placeholder="Contoh: 500000000"
+            />
+            <p v-if="form.errors.value" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.value }}
+            </p>
+          </div>
+
+          <div class="form-field">
+            <label for="location">Lokasi / Alamat</label>
+            <input
+              id="location"
+              type="text"
+              v-model="form.location"
+              placeholder="Contoh: Jl. Sudirman No. 10"
+            />
+            <p v-if="form.errors.location" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+              {{ form.errors.location }}
+            </p>
+          </div>
         </div>
 
         <div class="form-field">
-          <label>Jenis Aset</label>
-          <select>
-            <option>Properti</option>
-            <option>Kendaraan</option>
-            <option>Tabungan</option>
-            <option>Investasi</option>
-            <option>Lainnya</option>
-          </select>
+          <label for="description">Keterangan</label>
+          <textarea
+            id="description"
+            v-model="form.description"
+            rows="4"
+            placeholder="Informasi tambahan mengenai aset..."
+          ></textarea>
+          <p v-if="form.errors.description" style="color:#e74c3c; font-size:12px; margin-top:4px;">
+            {{ form.errors.description }}
+          </p>
         </div>
 
-        <div class="form-field">
-          <label>Nilai Aset</label>
-          <input type="number" placeholder="500000000" />
+        <div class="actions">
+          <Link href="/assets" class="wd-btn-outline">
+            Batal
+          </Link>
+
+          <button type="submit" class="wd-btn-primary" :disabled="form.processing">
+            {{ form.processing ? 'Menyimpan...' : 'Simpan Aset →' }}
+          </button>
         </div>
-
-        <div class="form-field">
-          <label>Pemilik</label>
-          <input type="text" placeholder="Nama Pemilik" />
-        </div>
-      </div>
-
-      <div class="form-field">
-        <label>Keterangan</label>
-        <textarea rows="4" placeholder="Informasi tambahan mengenai aset..."></textarea>
-      </div>
-
-      <div class="actions">
-        <a href="/assets" class="wd-btn-outline">
-          Batal
-        </a>
-
-        <button class="wd-btn-primary">
-          Simpan Aset →
-        </button>
-      </div>
+      </form>
     </div>
   </AppLayout>
 </template>

@@ -1,6 +1,7 @@
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, watch } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { router } from '@inertiajs/vue3'
 
 const props = defineProps({
   user: Object,
@@ -15,6 +16,12 @@ const userData = reactive(props.user ?? {
   joined: 'Januari 2024',
   plan: 'Premium',
 })
+
+watch(() => props.user, (newUser) => {
+  if (newUser) {
+    Object.assign(userData, newUser)
+  }
+}, { deep: true })
 
 // Tab
 const activeTab = ref('informasi')
@@ -43,20 +50,34 @@ const openEdit = () => {
 
 const closeEdit = () => { showEditModal.value = false }
 
-const saveEdit = async () => {
+const saveEdit = () => {
   editError.value = ''
   if (!editForm.name.trim()) { editError.value = 'Nama tidak boleh kosong.'; return }
   if (!editForm.email.includes('@')) { editError.value = 'Email tidak valid.'; return }
 
   editLoading.value = true
-  // nanti diganti axios.put('/api/profile', editForm)
-  await new Promise(r => setTimeout(r, 800))
-  userData.name = editForm.name
-  userData.email = editForm.email
-  userData.phone = editForm.phone
-  editLoading.value = false
-  editSuccess.value = true
-  setTimeout(() => { showEditModal.value = false; editSuccess.value = false }, 1200)
+  router.put('/profile', {
+    name: editForm.name,
+    email: editForm.email,
+    phone: editForm.phone,
+  }, {
+    onFinish: () => {
+      editLoading.value = false
+    },
+    onSuccess: () => {
+      editSuccess.value = true
+      userData.name = editForm.name
+      userData.email = editForm.email
+      userData.phone = editForm.phone
+      setTimeout(() => {
+        showEditModal.value = false
+        editSuccess.value = false
+      }, 1000)
+    },
+    onError: (errors) => {
+      editError.value = Object.values(errors)[0] || 'Terjadi kesalahan saat memperbarui profil.'
+    }
+  })
 }
 
 // Modal ganti password
@@ -75,17 +96,31 @@ const openPassword = () => {
   showPasswordModal.value = true
 }
 
-const savePassword = async () => {
+const savePassword = () => {
   passError.value = ''
   if (!passForm.current) { passError.value = 'Password lama wajib diisi.'; return }
   if (passForm.new.length < 8) { passError.value = 'Password baru minimal 8 karakter.'; return }
   if (passForm.new !== passForm.confirm) { passError.value = 'Konfirmasi password tidak cocok.'; return }
 
   passLoading.value = true
-  await new Promise(r => setTimeout(r, 800))
-  passLoading.value = false
-  passSuccess.value = true
-  setTimeout(() => { showPasswordModal.value = false; passSuccess.value = false }, 1200)
+  router.put('/profile/password', {
+    current: passForm.current,
+    new: passForm.new,
+  }, {
+    onFinish: () => {
+      passLoading.value = false
+    },
+    onSuccess: () => {
+      passSuccess.value = true
+      setTimeout(() => {
+        showPasswordModal.value = false
+        passSuccess.value = false
+      }, 1000)
+    },
+    onError: (errors) => {
+      passError.value = Object.values(errors)[0] || 'Terjadi kesalahan saat mengubah password.'
+    }
+  })
 }
 
 // Notifikasi toggles

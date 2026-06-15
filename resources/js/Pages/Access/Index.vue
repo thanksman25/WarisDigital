@@ -1,5 +1,19 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { Link, router } from '@inertiajs/vue3'
+
+defineProps({
+  permissions: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const revokeAccess = (id) => {
+  if (confirm('Apakah Anda yakin ingin mencabut hak akses ini?')) {
+    router.delete(`/access/${id}`)
+  }
+}
 </script>
 
 <template>
@@ -9,9 +23,9 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 
     <div class="access-page">
       <div class="access-header">
-        <a href="/access/create" class="wd-btn-primary">
-          + Tambah Pengguna
-        </a>
+        <Link href="/access/create" class="wd-btn-primary">
+          + Tambah Hak Akses
+        </Link>
       </div>
 
       <div class="wd-card access-card">
@@ -24,25 +38,33 @@ import AppLayout from '@/Layouts/AppLayout.vue'
           <thead>
             <tr>
               <th>Nama Pengguna</th>
-              <th>Peran</th>
+              <th>Nama Dokumen</th>
               <th>Hak Akses</th>
               <th>Status</th>
+              <th>Aksi</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr>
-              <td><strong>Siti Rahayu</strong></td>
-              <td><span class="role-badge wife">Istri</span></td>
-              <td>Semua Dokumen</td>
+            <tr v-for="p in permissions" :key="p.id">
+              <td><strong>{{ p.user?.name || 'Unknown User' }}</strong></td>
+              <td>{{ p.document?.title || 'Unknown Document' }}</td>
+              <td>
+                <span class="role-badge child">{{ p.permission }}</span>
+              </td>
               <td><span class="wd-badge success">Aktif</span></td>
+              <td>
+                <button
+                  @click="revokeAccess(p.id)"
+                  class="wd-btn-outline"
+                  style="color:#c0392b; border-color:#fde8e8; background:#fde8e8; padding:5px 10px; font-size:12px; font-weight:700; border-radius:6px; cursor:pointer;"
+                >
+                  Cabut Akses
+                </button>
+              </td>
             </tr>
-
-            <tr>
-              <td><strong>Budi Ahmad</strong></td>
-              <td><span class="role-badge child">Anak</span></td>
-              <td>Properti</td>
-              <td><span class="wd-badge gold">Pending</span></td>
+            <tr v-if="permissions.length === 0">
+              <td colspan="5" style="text-align: center; color: #888;">Belum ada akses yang diberikan.</td>
             </tr>
           </tbody>
         </table>
@@ -61,6 +83,11 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 .access-header {
   display: flex;
   justify-content: flex-end;
+}
+
+.access-header Link,
+.access-header a {
+  text-decoration: none;
 }
 
 .access-card {
@@ -116,13 +143,9 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   font-weight: 600;
 }
 
-.wife {
-  background: #fde8e8;
-  color: #c0392b;
-}
-
 .child {
   background: #eef2ff;
   color: #4338ca;
+  text-transform: uppercase;
 }
 </style>

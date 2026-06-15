@@ -1,15 +1,45 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { router } from '@inertiajs/vue3'
+
+const props = defineProps({
+  documents: {
+    type: Array,
+    default: () => []
+  }
+})
 
 const activeCategory = ref('Semua')
+const searchQuery = ref('')
 
-function editDocument() {
-  alert('Fitur edit belum disambungkan ke backend.')
+const filteredDocuments = computed(() => {
+  let list = props.documents
+  
+  if (activeCategory.value !== 'Semua') {
+    list = list.filter(d => d.file_type === activeCategory.value)
+  }
+  
+  if (searchQuery.value.trim() !== '') {
+    const query = searchQuery.value.toLowerCase()
+    list = list.filter(d => {
+      const matchTitle = d.title.toLowerCase().includes(query)
+      const matchDesc = (d.description || '').toLowerCase().includes(query)
+      return matchTitle || matchDesc
+    })
+  }
+  
+  return list
+})
+
+function editDocument(id) {
+  alert('Fitur edit belum disambungkan ke backend untuk ID: ' + id)
 }
 
-function deleteDocument() {
-  alert('Fitur hapus belum disambungkan ke backend.')
+function deleteDocument(id) {
+  if (confirm('Apakah Anda yakin ingin menghapus dokumen ini secara permanen?')) {
+    router.delete(`/documents/${id}`)
+  }
 }
 </script>
 
@@ -81,83 +111,38 @@ function deleteDocument() {
         </div>
 
       <div class="vault-toolbar">
-        <div class="vault-search">🔍 <span>Cari nama dokumen...</span></div>
+        <input v-model="searchQuery" type="text" placeholder="🔍 Cari nama dokumen..." style="flex: 1; border: 1px solid var(--wd-border); border-radius: 10px; padding: 11px 14px; font-family: inherit; font-size: 14px; outline: none; background: white;" />
         <button class="wd-btn-outline">Filter ▾</button>
         <button class="wd-btn-outline">Urutkan ▾</button>
       </div>
 
-      <div class="doc-grid">
-        <div class="doc-card">
+      <div class="doc-grid" v-if="filteredDocuments.length > 0">
+        <div class="doc-card" v-for="doc in filteredDocuments" :key="doc.id">
           <div class="doc-card-top">
             <div class="doc-file-icon icon-red">📄</div>
             <div>
-              <div class="doc-name">KTP Ahmad Sutarjo</div>
-              <div class="doc-cat">Identitas</div>
-              <div class="doc-note">Berlaku s/d: 17 Jun 2025</div>
+              <div class="doc-name">{{ doc.title }}</div>
+              <div class="doc-cat">{{ doc.file_type || 'Umum' }}</div>
+              <div class="doc-note">{{ doc.description || 'Tidak ada deskripsi' }}</div>
             </div>
           </div>
 
           <div class="doc-card-bot">
             <div>
-              <div class="doc-date">Upload: 12 Mar 2024</div>
-              <div class="doc-status status-exp">⚠ 3 Hari</div>
-            </div>
-
-            <div class="doc-actions">
-              <a href="/documents/show" class="doc-action">👁</a>
-              <button class="doc-action" @click="editDocument">✏️</button>
-              <button class="doc-action" @click="deleteDocument">🗑</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="doc-card">
-          <div class="doc-card-top">
-            <div class="doc-file-icon icon-green">🏠</div>
-            <div>
-              <div class="doc-name">SHM Jl. Merdeka No.5</div>
-              <div class="doc-cat">Properti</div>
-              <div class="doc-note">Tidak kedaluwarsa</div>
-            </div>
-          </div>
-
-          <div class="doc-card-bot">
-            <div>
-              <div class="doc-date">Upload: 05 Jan 2024</div>
+              <div class="doc-date">Upload: {{ new Date(doc.created_at).toLocaleDateString() }}</div>
               <div class="doc-status status-ok">✅ Aktif</div>
             </div>
 
             <div class="doc-actions">
-              <a href="/documents/show" class="doc-action">👁</a>
-              <button class="doc-action" @click="editDocument">✏️</button>
-              <button class="doc-action" @click="deleteDocument">🗑</button>
+              <a :href="`/documents/show?id=${doc.id}`" class="doc-action">👁</a>
+              <button class="doc-action" @click="editDocument(doc.id)">✏️</button>
+              <button class="doc-action" @click="deleteDocument(doc.id)">🗑</button>
             </div>
           </div>
         </div>
-
-        <div class="doc-card">
-          <div class="doc-card-top">
-            <div class="doc-file-icon icon-orange">🚗</div>
-            <div>
-              <div class="doc-name">BPKB Honda Civic 2019</div>
-              <div class="doc-cat">Kendaraan</div>
-              <div class="doc-note">Berlaku s/d: 28 Jun 2025</div>
-            </div>
-          </div>
-
-          <div class="doc-card-bot">
-            <div>
-              <div class="doc-date">Upload: 20 Nov 2023</div>
-              <div class="doc-status status-warn">⏰ 14 Hari</div>
-            </div>
-
-            <div class="doc-actions">
-              <a href="/documents/show" class="doc-action">👁</a>
-              <button class="doc-action" @click="editDocument">✏️</button>
-              <button class="doc-action" @click="deleteDocument">🗑</button>
-            </div>
-          </div>
-        </div>
+      </div>
+      <div v-else style="text-align: center; padding: 40px; color: #888; border: 1px dashed #ccc; border-radius: 10px; background: white;">
+        Belum ada dokumen.
       </div>
     </div>
   </AppLayout>

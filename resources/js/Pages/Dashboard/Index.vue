@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
 const props = defineProps({
@@ -10,13 +11,13 @@ const props = defineProps({
 })
 
 // Fallback data buat preview (nanti diganti dari controller)
-const userData = props.user ?? {
+const userData = computed(() => props.user ?? {
   name: 'Ahmad Sutarjo',
   initials: 'AS',
   role: 'Kepala Keluarga',
-}
+})
 
-const statsData = props.stats ?? {
+const statsData = computed(() => props.stats ?? {
   totalDokumen: 12,
   totalDokumenTrend: '↑ 3 dokumen bulan ini',
   totalAset: 5,
@@ -24,27 +25,27 @@ const statsData = props.stats ?? {
   ahliWaris: 3,
   ahliWarisTrend: '1 menunggu konfirmasi',
   jatuhTempo: 2,
-}
+})
 
-const activities = props.recentActivities ?? [
+const activities = computed(() => props.recentActivities ?? [
   { text: 'KTP Ahmad Sutarjo diperbarui', time: '2 jam lalu', color: '#F0AD52' },
   { text: 'Dewi Ahmad ditambahkan sebagai ahli waris', time: 'Kemarin, 15:30', color: '#A76430' },
   { text: 'SHM Properti Bogor diunggah', time: '3 hari lalu', color: '#2B0303' },
   { text: 'Simulasi waris dibuat & disimpan', time: '5 hari lalu', color: '#ccc' },
-]
+])
 
-const documents = props.upcomingDocuments ?? [
+const documents = computed(() => props.upcomingDocuments ?? [
   { name: 'KTP Ahmad Sutarjo', expiry: '17 Jun 2025', label: '3 hari', urgency: 'danger' },
   { name: 'BPKB Honda Civic', expiry: '28 Jun 2025', label: '14 hari', urgency: 'warn' },
   { name: 'Paspor Siti Rahayu', expiry: '10 Jul 2025', label: '26 hari', urgency: 'success' },
-]
+])
 
-const completeness = props.documentCompleteness ?? [
+const completeness = computed(() => props.documentCompleteness ?? [
   { label: 'Identitas & KTP', value: 100, color: '#27ae60' },
   { label: 'Properti', value: 75, color: '#F0AD52' },
   { label: 'Keuangan', value: 50, color: '#e67e22' },
   { label: 'Kendaraan', value: 100, color: '#27ae60' },
-]
+])
 
 const today = new Date().toLocaleDateString('id-ID', {
   weekday: 'long', day: 'numeric', month: 'long', year: 'numeric'

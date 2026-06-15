@@ -1,0 +1,1 @@
+<?php namespace Database\Seeders; use Illuminate\Database\Seeder; use App\Models\ClaimGuide; class ClaimGuideSeeder extends Seeder { public function run() { ClaimGuide::create(['institution' => 'BPJS Ketenagakerjaan', 'title' => 'Klaim JHT JKM', 'description' => 'Panduan klaim JKM', 'is_active' => true]); } }

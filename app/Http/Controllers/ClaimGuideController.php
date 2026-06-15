@@ -11,7 +11,7 @@ class ClaimGuideController extends Controller
     public function index()
     {
         $guides = ClaimGuide::where('is_active', true)->get();
-        return response()->json($guides);
+        return \Inertia\Inertia::render('Claims/Index', ['guides' => $guides]);
     }
 
     // Tampilkan panduan berdasarkan institusi

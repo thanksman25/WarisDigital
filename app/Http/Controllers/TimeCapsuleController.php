@@ -14,7 +14,7 @@ class TimeCapsuleController extends Controller
                                ->orderBy('unlock_at', 'asc')
                                ->get();
 
-        return response()->json($capsules);
+        return \Inertia\Inertia::render('TimeCapsule/Index', ['capsules' => $capsules]);
     }
 
     // Buat kapsul waktu baru
@@ -28,7 +28,7 @@ class TimeCapsuleController extends Controller
             'unlock_condition' => 'required|in:date,death,manual',
         ]);
 
-        $capsule = TimeCapsule::create([
+        TimeCapsule::create([
             'user_id'          => auth()->id(),
             'title'            => $request->title,
             'message'          => $request->message,
@@ -38,35 +38,26 @@ class TimeCapsuleController extends Controller
             'is_unlocked'      => false,
         ]);
 
-        return response()->json([
-            'message' => 'Kapsul waktu berhasil dibuat',
-            'capsule' => $capsule
-        ], 201);
+        return redirect()->route('time-capsule.index')->with('success', 'Kapsul waktu berhasil dibuat.');
     }
 
     // Lihat detail kapsul waktu
     public function show($id)
     {
         $capsule = TimeCapsule::where('user_id', auth()->id())
+                              ->with('document')
                               ->findOrFail($id);
 
         // Cek apakah sudah waktunya dibuka
         if (!$capsule->is_unlocked) {
             if ($capsule->unlock_condition === 'date' && now()->greaterThanOrEqualTo($capsule->unlock_at)) {
                 $capsule->update(['is_unlocked' => true]);
-            } else if ($capsule->unlock_condition !== 'date') {
-                return response()->json([
-                    'message' => 'Kapsul waktu belum bisa dibuka'
-                ], 403);
-            } else {
-                return response()->json([
-                    'message' => 'Kapsul waktu belum waktunya dibuka',
-                    'unlock_at' => $capsule->unlock_at
-                ], 403);
             }
         }
 
-        return response()->json($capsule);
+        return \Inertia\Inertia::render('TimeCapsule/Show', [
+            'capsule' => $capsule,
+        ]);
     }
 
     // Buka kapsul waktu secara manual (oleh pemilik)
@@ -97,8 +88,6 @@ class TimeCapsuleController extends Controller
 
         $capsule->delete();
 
-        return response()->json([
-            'message' => 'Kapsul waktu berhasil dihapus'
-        ]);
+        return redirect()->route('time-capsule.index')->with('success', 'Kapsul waktu berhasil dihapus.');
     }
 }

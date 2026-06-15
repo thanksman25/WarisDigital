@@ -1,5 +1,35 @@
 <script setup>
+import { computed } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import { Link } from '@inertiajs/vue3'
+
+const props = defineProps({
+  document: {
+    type: Object,
+    required: true,
+  },
+  reminder: {
+    type: Object,
+    default: null,
+  },
+})
+
+const daysLeft = computed(() => {
+  if (!props.reminder || !props.reminder.remind_at) return null
+  const remindDate = new Date(props.reminder.remind_at)
+  const diffTime = remindDate - new Date()
+  const days = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return days > 0 ? days : 0
+})
+
+const formatBytes = (bytes) => {
+  if (!bytes) return 'Tidak Diketahui'
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
+}
 </script>
 
 <template>
@@ -10,8 +40,11 @@ import AppLayout from '@/Layouts/AppLayout.vue'
     <div class="show-page">
       <div class="wd-card preview-card">
         <div class="file-icon">📄</div>
-        <h2>KTP Ahmad Sutarjo</h2>
-        <span class="wd-badge danger">Akan kedaluwarsa 3 hari lagi</span>
+        <h2>{{ document.title }}</h2>
+        <span v-if="daysLeft !== null" class="wd-badge" :class="daysLeft <= 7 ? 'danger' : 'gold'">
+          Akan kedaluwarsa {{ daysLeft }} hari lagi
+        </span>
+        <span v-else class="wd-badge success">Aktif & Aman</span>
       </div>
 
       <div class="wd-card detail-card">
@@ -19,26 +52,35 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 
         <div class="detail-row">
           <span>Kategori</span>
-          <strong>Identitas</strong>
+          <strong>{{ document.file_type || 'Lainnya' }}</strong>
         </div>
 
         <div class="detail-row">
           <span>Berlaku Hingga</span>
-          <strong>17 Juni 2025</strong>
+          <strong>
+            {{ reminder ? new Date(reminder.remind_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Tidak Terbatas' }}
+          </strong>
         </div>
 
         <div class="detail-row">
           <span>Upload</span>
-          <strong>12 Maret 2024</strong>
+          <strong>
+            {{ new Date(document.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) }}
+          </strong>
+        </div>
+
+        <div class="detail-row">
+          <span>Ukuran Berkas</span>
+          <strong>{{ formatBytes(document.file_size) }}</strong>
         </div>
 
         <div class="detail-row">
           <span>Visibilitas</span>
-          <strong>Privat</strong>
+          <strong>Privat (Hanya Pemilik)</strong>
         </div>
 
         <div class="actions">
-          <a href="/documents" class="wd-btn-outline">Kembali</a>
+          <Link href="/documents" class="wd-btn-outline">Kembali</Link>
           <button class="wd-btn-primary">Unduh Dokumen</button>
         </div>
       </div>
@@ -51,15 +93,28 @@ import AppLayout from '@/Layouts/AppLayout.vue'
   display: grid;
   grid-template-columns: 1fr 1.4fr;
   gap: 18px;
+  max-width: 980px;
+  margin: 0 auto;
 }
 
 .preview-card {
   text-align: center;
+  padding: 32px 20px;
 }
 
 .file-icon {
   font-size: 72px;
   margin-bottom: 12px;
+}
+
+.detail-card {
+  padding: 24px;
+}
+
+.detail-card h3 {
+  margin-top: 0;
+  margin-bottom: 18px;
+  color: var(--wd-dark);
 }
 
 .detail-row {
@@ -74,10 +129,16 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 }
 
 .actions {
-  margin-top: 18px;
+  margin-top: 24px;
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+.actions a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 900px) {

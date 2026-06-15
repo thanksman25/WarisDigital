@@ -14,7 +14,7 @@ class AssetController extends Controller
                        ->where('is_active', true)
                        ->get();
 
-        return response()->json($assets);
+        return \Inertia\Inertia::render('Assets/Index', ['assets' => $assets]);
     }
 
     // Tambah aset baru
@@ -31,7 +31,7 @@ class AssetController extends Controller
             'document_id' => 'nullable|exists:documents,id',
         ]);
 
-        $asset = Asset::create([
+        Asset::create([
             'user_id'     => auth()->id(),
             'name'        => $request->name,
             'type'        => $request->type,
@@ -44,10 +44,7 @@ class AssetController extends Controller
             'is_active'   => true,
         ]);
 
-        return response()->json([
-            'message' => 'Aset berhasil ditambahkan',
-            'asset'   => $asset
-        ], 201);
+        return redirect()->route('assets.index')->with('success', 'Aset berhasil ditambahkan.');
     }
 
     // Lihat detail aset
@@ -92,9 +89,7 @@ class AssetController extends Controller
 
         $asset->update(['is_active' => false]);
 
-        return response()->json([
-            'message' => 'Aset berhasil dihapus'
-        ]);
+        return redirect()->route('assets.index')->with('success', 'Aset berhasil dihapus.');
     }
 
     // Ringkasan total nilai aset

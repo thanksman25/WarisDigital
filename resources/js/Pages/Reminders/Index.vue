@@ -2,36 +2,37 @@
 import { computed, ref } from 'vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 
+const props = defineProps({
+  reminders: {
+    type: Array,
+    default: () => []
+  }
+})
+
 const isLoading = ref(false)
 
-const todayDate = 14
+const todayDate = new Date().getDate()
 
-const reminders = ref([
-  {
-    id: 1,
-    title: 'KTP Ahmad Sutarjo',
-    expiredText: '17 Juni 2025',
-    expiredDay: 17,
-    daysLeft: 3,
-    status: 'urgent',
-  },
-  {
-    id: 2,
-    title: 'BPKB Honda Civic',
-    expiredText: '28 Juni 2025',
-    expiredDay: 28,
-    daysLeft: 14,
-    status: 'soon',
-  },
-  {
-    id: 3,
-    title: 'Paspor Siti Rahayu',
-    expiredText: '10 Maret 2026',
-    expiredDay: null,
-    daysLeft: 270,
-    status: 'safe',
-  },
-])
+const processedReminders = computed(() => {
+  return props.reminders.map(r => {
+    const remindDate = new Date(r.remind_at)
+    const diffTime = Math.abs(remindDate - new Date())
+    const daysLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+    
+    let status = 'safe'
+    if (daysLeft <= 7) status = 'urgent'
+    else if (daysLeft <= 30) status = 'soon'
+    
+    return {
+      id: r.id,
+      title: r.title,
+      expiredText: remindDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }),
+      expiredDay: remindDate.getDate(),
+      daysLeft: daysLeft,
+      status: status
+    }
+  })
+})
 
 const calendarDays = [
   null, null, null, null,
@@ -43,15 +44,15 @@ const calendarDays = [
 ]
 
 const groupedReminders = computed(() => ({
-  urgent: reminders.value.filter((item) => item.status === 'urgent'),
-  soon: reminders.value.filter((item) => item.status === 'soon'),
-  safe: reminders.value.filter((item) => item.status === 'safe'),
+  urgent: processedReminders.value.filter((item) => item.status === 'urgent'),
+  soon: processedReminders.value.filter((item) => item.status === 'soon'),
+  safe: processedReminders.value.filter((item) => item.status === 'safe'),
 }))
 
 const getDayClass = (day) => {
   if (!day) return ''
 
-  const reminder = reminders.value.find((item) => item.expiredDay === day)
+  const reminder = processedReminders.value.find((item) => item.expiredDay === day)
 
   if (day === todayDate) return 'today'
   if (reminder?.status === 'urgent') return 'urgent'
