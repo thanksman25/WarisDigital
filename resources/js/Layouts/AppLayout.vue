@@ -22,6 +22,7 @@ const menuPlan = [
   { label: 'Simulasi Waris', icon: '⚖️', href: '/inheritance' },
   { label: 'Kapsul Waktu', icon: '⏳', href: '/time-capsule' },
   { label: 'Mitra Notaris', icon: '⚖️', href: '/notary' },
+  { label: 'Panduan Klaim', icon: '📋', href: '/claims' },
 ]
 </script>
 
@@ -43,20 +44,32 @@ const menuPlan = [
 
       <nav class="wd-nav">
         <p class="wd-nav-title">Menu Utama</p>
-        <Link v-for="item in menuMain" :key="item.label" :href="item.href" class="wd-nav-item">
+        <Link
+          v-for="item in menuMain"
+          :key="item.label"
+          :href="item.href"
+          class="wd-nav-item"
+          :class="{ active: $page.url === item.href || $page.url.startsWith(item.href + '/') }"
+        >
           <span>{{ item.icon }}</span>
           {{ item.label }}
         </Link>
 
         <p class="wd-nav-title">Perencanaan</p>
-        <Link v-for="item in menuPlan" :key="item.label" :href="item.href" class="wd-nav-item">
+        <Link
+          v-for="item in menuPlan"
+          :key="item.label"
+          :href="item.href"
+          class="wd-nav-item"
+          :class="{ active: $page.url === item.href || $page.url.startsWith(item.href + '/') }"
+        >
           <span>{{ item.icon }}</span>
           {{ item.label }}
         </Link>
       </nav>
 
       <div class="wd-sidebar-footer">
-        <Link href="/profile" class="wd-nav-item">⚙️ Pengaturan</Link>
+        <Link href="/profile" class="wd-nav-item" :class="{ active: $page.url === '/profile' }">⚙️ Pengaturan</Link>
         <Link href="/logout" method="post" as="button" class="wd-nav-item" style="background:none; border:none; text-align:left; cursor:pointer; width:100%; font-family:inherit;">
           🚪 Keluar
         </Link>
